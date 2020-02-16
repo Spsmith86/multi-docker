@@ -1,0 +1,23 @@
+sudo: required
+services:
+    - docker
+
+before_install:
+    - docker build -t spsmith86/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+    - run -e CI=true spsmith86/react-test npm test
+
+after_success:
+    - docker build -t spsmith86/multi-client ./client
+    - docker build -t spsmith86/multi-nginx ./nginx
+    - docker build -t spsmith86/multi-server ./server
+    - docker build -t spsmith86/multi-worker ./worker
+
+    #Log into Docker CLI
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    #Take the images and push them to docker hub
+    - docker push spsmith86/multi-client
+    - docker push spsmith86/multi-nginx
+    - docker push spsmith86/multi-server
+    - docker push spsmith86/multi-worker
