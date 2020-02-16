@@ -21,3 +21,17 @@ after_success:
     - docker push spsmith86/multi-nginx
     - docker push spsmith86/multi-server
     - docker push spsmith86/multi-worker
+
+#Deploy to AWS
+deploy:
+    provider: elasticbeanstalk
+    region: "us-east-2"
+    app: "multi-docker"
+    env: "MultiDocker-env"
+    bucket_name: "elasticbeanstalk-us-east-2-881509186982"
+    bucket_path: "multi-docker"
+    on:
+      branch: master
+    #Get keys from Travis CI environment variables
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
